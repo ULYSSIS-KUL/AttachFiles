@@ -232,6 +232,7 @@ EOD;
     public static function onBeforePageDisplay($out, $skin) {
         global $wgContentNamespaces;
         global $wgAFIgnoredPages;
+        global $wgExtensionAssetsPath;
 
         $title = $out->getTitle();
         $id = $title->getArticleID();
@@ -273,11 +274,12 @@ EOD;
                     $url = htmlentities($file->getUrl());
                     $displayName = htmlentities($row->displayname);
                     $timestamp = $file->getTimestamp();
+                    $uploader = $file->getUploader();
                     $tableRow = "<tr>";
-                    $tableRow .= "<td><img src=\"extensions/AttachFiles/icons/$fileType.png\" style=\"padding-right: 0.3em\"><a href=\"$url\" download=\"$downloadName\">$displayName</a></td>";
+                    $tableRow .= "<td><img src=\"" . $wgExtensionAssetsPath . "/AttachFiles/icons/$fileType.png\" style=\"padding-right: 0.3em\"><a href=\"$url\" download=\"$downloadName\">$displayName</a></td>";
                     $tableRow .= "<td>" . $context->msg($fileType) . "</td>";
                     $tableRow .= "<td data-sort-value=\"$timestamp\">" . $context->getLanguage()->date($timestamp, true) . "</td>";
-                    $tableRow .= "<td>" . htmlentities($file->getUser()) . "</td>";
+                    $tableRow .= "<td>" . Linker::userLink($uploader->getId(), $uploader->getName()) . "</td>";
                     if ($canDelete) {
                         $articleID = $file->getTitle()->getArticleID();
                         $tableRow .= "<td><a href=\"javascript:deleteFile($articleID, `$displayName`);\">" . $context->msg("attachfiles-delete") . "</a></td>";
