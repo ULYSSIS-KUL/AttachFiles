@@ -274,12 +274,19 @@ EOD;
                     $url = htmlentities($file->getUrl());
                     $displayName = htmlentities($row->displayname);
                     $timestamp = $file->getTimestamp();
-                    $uploader = $file->getUploader();
+                    if (method_exists($file, "getUploader")) {
+                        $uploader = $file->getUploader();
+                        $uploaderId = $uploader->getId();
+                        $uploaderName = $uploader->getName();
+                    } else {
+                        $uploaderId = $file->getUser("id");
+                        $uploaderName = $file->getUser("text");
+                    }
                     $tableRow = "<tr>";
                     $tableRow .= "<td><img src=\"" . $wgExtensionAssetsPath . "/AttachFiles/icons/$fileType.png\" style=\"padding-right: 0.3em\"><a href=\"$url\" download=\"$downloadName\">$displayName</a></td>";
                     $tableRow .= "<td>" . $context->msg($fileType) . "</td>";
                     $tableRow .= "<td data-sort-value=\"$timestamp\">" . $context->getLanguage()->date($timestamp, true) . "</td>";
-                    $tableRow .= "<td>" . Linker::userLink($uploader->getId(), $uploader->getName()) . "</td>";
+                    $tableRow .= "<td>" . Linker::userLink($uploaderId, $uploaderName) . "</td>";
                     if ($canDelete) {
                         $articleID = $file->getTitle()->getArticleID();
                         $tableRow .= "<td><a href=\"javascript:deleteFile($articleID, `$displayName`);\">" . $context->msg("attachfiles-delete") . "</a></td>";
